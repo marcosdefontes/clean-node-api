@@ -30,6 +30,7 @@ module.exports = {
     ".+\\.ts$": "ts-jest",
   },
   preset: "@shelf/jest-mongodb",
+  watchPathIgnorePatterns: ["globalConfig"],
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
