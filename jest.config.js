@@ -29,6 +29,7 @@ module.exports = {
   transform: {
     ".+\\.ts$": "ts-jest",
   },
+  preset: "@shelf/jest-mongodb",
 
   // An array of regexp pattern strings used to skip coverage collection
   // coveragePathIgnorePatterns: [
