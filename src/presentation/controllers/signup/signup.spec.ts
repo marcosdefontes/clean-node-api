@@ -11,8 +11,7 @@ import {
   AddAccountModel,
 } from "./signup-protocols";
 import { HttpRequest } from "../../protocols";
-import { badRequest, serverError } from "../../helpers/http-helpers";
-import { ok } from "assert";
+import { ok, serverError, badRequest } from "../../helpers/http-helper";
 
 const makeEmailValidator = (): EmailValidator => {
   class EmailValidatorStub implements EmailValidator {
@@ -181,21 +180,7 @@ describe("SignUp Controller", () => {
 
   test("Should return 200 if valid data is provided", async () => {
     const { sut } = makeSut();
-    const httpRequest = {
-      body: {
-        name: "valid_name",
-        email: "valid_email@mail.com",
-        password: "valid_password",
-        passwordConfirmation: "valid_password",
-      },
-    };
-    const httpResponse = await sut.handle(httpRequest);
-    expect(httpResponse.statusCode).toBe(200);
-    expect(httpResponse.body).toEqual({
-      id: "valid_id",
-      name: "valid_name",
-      email: "valid_email@mail.com",
-      password: "valid_password",
-    });
+    const httpResponse = await sut.handle(makeFakeRequest());
+    expect(httpResponse).toEqual(ok(makeFakeAccount()));
   });
 });
