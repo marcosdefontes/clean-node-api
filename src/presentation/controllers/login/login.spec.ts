@@ -1,3 +1,4 @@
+import { Authentication } from "../../../domain/usecases/authentication";
 import { InvalidParamError, MissingParamError } from "../../errors";
 import { badRequest, serverError } from "../../helpers/http-helper";
 import { HttpRequest } from "../../protocols";
@@ -7,6 +8,7 @@ import { LoginController } from "./login";
 interface SutTypes {
   sut: LoginController;
   emailValidatorStub: EmailValidator;
+  authenticationStub: Authentication;
 }
 
 const makeEmailValidator = (): EmailValidator => {
@@ -18,6 +20,15 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub();
 };
 
+const makeAuthentication = (): Authentication => {
+  class AuthenticationStub implements Authentication {
+    async auth(email: string, password: string): Promise<string> {
+      return new Promise((resolve) => resolve("any_token"));
+    }
+  }
+  return new AuthenticationStub();
+};
+
 const makeFakeRequest = (): HttpRequest => ({
   body: {
     email: "any@mail.com",
@@ -25,9 +36,10 @@ const makeFakeRequest = (): HttpRequest => ({
   },
 });
 const makeSut = (): SutTypes => {
-  const emailValidator = makeEmailValidator();
-  const sut = new LoginController(emailValidator);
-  return { sut, emailValidatorStub: emailValidator };
+  const emailValidatorStub = makeEmailValidator();
+  const authenticationStub = makeAuthentication();
+  const sut = new LoginController(emailValidatorStub, authenticationStub);
+  return { sut, emailValidatorStub, authenticationStub };
 };
 
 describe("Login Controller", () => {
@@ -62,6 +74,12 @@ describe("Login Controller", () => {
     const isValidSpy = jest.spyOn(emailValidatorStub, "isValid");
     await sut.handle(makeFakeRequest());
     expect(isValidSpy).toHaveBeenCalledWith("any@mail.com");
+  });
+  test("Should call Authentication with correct params", async () => {
+    const { sut, authenticationStub } = makeSut();
+    const authSpy = jest.spyOn(authenticationStub, "auth");
+    await sut.handle(makeFakeRequest());
+    expect(authSpy).toHaveBeenCalledWith("any@mail.com", "any_password");
   });
   test("Should return 500 if EmailValidator throws", async () => {
     const { sut, emailValidatorStub } = makeSut();
