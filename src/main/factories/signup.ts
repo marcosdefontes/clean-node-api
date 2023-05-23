@@ -11,12 +11,10 @@ import { makeSignupValidation } from "./signup-validation";
 
 export const makeSignUpController = (): Controller => {
   const salt = 12;
-  const emailValidatorAdapter = new EmailValidatorAdapter();
   const bcryptAdapter = new BcryptAdapter(salt);
   const accountMongoRepository = new AccountMongoRepository();
   const dbAddAccount = new DbAddAccount(bcryptAdapter, accountMongoRepository);
   const signUpController = new SignUpController(
-    emailValidatorAdapter,
     dbAddAccount,
     makeSignupValidation()
   );
