@@ -1,19 +1,5 @@
-import { SignUpController } from "../../controllers/signup/signup";
-import {
-  AccountModel,
-  AddAccount,
-  AddAccountModel,
-  Validation,
-} from "../../controllers/signup/signup-protocols";
-import {
-  MissingParamError,
-  InvalidParamError,
-  ServerError,
-} from "../../errors";
-
-import { HttpRequest } from "../../protocols";
+import { InvalidParamError } from "../../errors";
 import { EmailValidator } from "../../protocols/email-validator";
-import { ok, serverError, badRequest } from "../http-helper";
 import { EmailValidation } from "./email-validation";
 
 const makeEmailValidator = (): EmailValidator => {
@@ -40,6 +26,12 @@ const makeSut = (): SutTypes => {
 };
 
 describe("Email Validation", () => {
+  test("Should return an error if EmailValidator returns false", () => {
+    const { sut, emailValidatorStub } = makeSut();
+    jest.spyOn(emailValidatorStub, "isValid").mockReturnValueOnce(false);
+    const response = sut.validate({ email: "any_email@mail.com" });
+    expect(response).toEqual(new InvalidParamError("email"));
+  });
   test("Should call EmailValidator with correct email", () => {
     const { sut, emailValidatorStub } = makeSut();
     const isValidSpy = jest.spyOn(emailValidatorStub, "isValid");
