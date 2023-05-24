@@ -1,10 +1,9 @@
-import { InvalidParamError, MissingParamError } from "../../errors";
 import {
   badRequest,
   ok,
   serverError,
   unathorized,
-} from "../../helpers/http-helper";
+} from "../../helpers/http/http-helper";
 import {
   Authentication,
   Controller,
