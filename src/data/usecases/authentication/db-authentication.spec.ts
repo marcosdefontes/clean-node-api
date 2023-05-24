@@ -136,4 +136,10 @@ describe("DB Authentication", () => {
     const promise = sut.auth(makeFakeAuthentication());
     expect(promise).rejects.toThrow();
   });
+
+  test("Should return token if succeeds", async () => {
+    const { sut } = makeSut();
+    const accessToken = await sut.auth(makeFakeAccount());
+    expect(accessToken).toBe("any_token");
+  });
 });
