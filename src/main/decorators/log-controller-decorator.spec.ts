@@ -1,4 +1,4 @@
-import { LogControllerDecorator } from "./log";
+import { LogControllerDecorator } from "./log-controller-decorator";
 import {
   Controller,
   HttpRequest,
